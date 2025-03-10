@@ -8,6 +8,8 @@ pipeline {
         AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com/mywebrepo"
         DOCKER_IMAGE_NAME = "myweb-app"
         DOCKER_TAG = "latest"
+        MAVEN_HOME = "/opt/apache-maven-3.9.9"
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -24,19 +26,18 @@ pipeline {
             }
         }
 
-            stage("Sonar Analysis") {
+        stage("Sonar Analysis") {
             steps {
                 script {
                     echo "Running Sonar analysis for 'main' branch"
                     withSonarQubeEnv('sonar') { // Using the correct Jenkins SonarQube credentials ID
-                       sh """
-                            $MAVEN_HOME/bin/mvn sonar:sonar -Dsonar.host.url=${SONAR_URL}
+                        sh """
+                            ${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.host.url=${SONAR_URL}
                         """
                     }
                 }
             }
         }
-
 
         stage('Build Docker Image') {
             steps {
@@ -75,4 +76,3 @@ pipeline {
         }
     }
 }
-
