@@ -8,8 +8,8 @@ pipeline {
         AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com/mywebrepo"
         DOCKER_IMAGE_NAME = "myweb-app"
         DOCKER_TAG = "latest"
-        MAVEN_HOME = "/opt/apache-maven-3.9.9"
-        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+        MAVEN_HOME = "/opt/maven" // Ensure this is the correct Maven path
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}" // Adding Maven to PATH
     }
 
     stages {
@@ -30,9 +30,9 @@ pipeline {
             steps {
                 script {
                     echo "Running Sonar analysis for 'main' branch"
-                    withSonarQubeEnv('sonar') { // Using the correct Jenkins SonarQube credentials ID
+                    withSonarQubeEnv('sonar') { // Ensure SonarQube is configured in Jenkins
                         sh """
-                            ${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.host.url=${SONAR_URL}
+                            mvn sonar:sonar -Dsonar.host.url=${SONAR_URL}
                         """
                     }
                 }
