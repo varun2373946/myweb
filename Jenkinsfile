@@ -9,7 +9,7 @@ pipeline {
         PROJECT_NAME = "my-java-app"
         SONAR_URL = "http://98.84.151.19:9000"
         AWS_CREDENTIAL = "aws" // Corrected the colon to an equals sign
-        AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com/mywebrepo"
+        AWS_ECR_REPO = "mywebrepo"
         DOCKER_IMAGE_NAME = "myweb-app"
         DOCKER_TAG = "latest"
         MAVEN_HOME = "/opt/maven" // Ensure this is the correct Maven path
