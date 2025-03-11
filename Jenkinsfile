@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = "ap-south-1"
+        AWS_REGION = "us-east-1"
         PROJECT_NAME = "my-java-app"
         SONAR_URL = "http://98.84.151.19:9000"
         AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com/mywebrepo"
