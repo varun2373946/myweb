@@ -9,8 +9,8 @@ pipeline {
         PROJECT_NAME = "my-java-app"
         SONAR_URL = "http://98.84.151.19:9000"
         AWS_CREDENTIAL = "aws" // Corrected the colon to an equals sign
-        AWS_ECR_REPO = "mywebrepo"
-        DOCKER_IMAGE_NAME = "myweb-app"
+        AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com"
+        DOCKER_IMAGE_NAME = "mywebrepo"
         DOCKER_TAG = "latest"
         MAVEN_HOME = "/opt/maven" // Ensure this is the correct Maven path
         PATH = "${MAVEN_HOME}/bin:${env.PATH}" // Adding Maven to PATH
@@ -73,9 +73,11 @@ pipeline {
                             aws configure set region ${AWS_REGION}
         
                             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REPO}
+                            
         
                             echo "Tagging Docker image..."
                             docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+                            
         
                             echo "Pushing Docker image to ECR..."
                             docker push ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
