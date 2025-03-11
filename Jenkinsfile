@@ -8,6 +8,7 @@ pipeline {
         AWS_REGION = "us-east-1"
         PROJECT_NAME = "my-java-app"
         SONAR_URL = "http://98.84.151.19:9000"
+        AWS_CREDENTIAL : "aws"
         AWS_ECR_REPO = "476114133216.dkr.ecr.us-east-1.amazonaws.com/mywebrepo"
         DOCKER_IMAGE_NAME = "myweb-app"
         DOCKER_TAG = "latest"
@@ -58,17 +59,29 @@ pipeline {
             steps {
                 script {
                     echo "Logging into AWS ECR..."
-                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REPO}"
-
-                    echo "Tagging Docker image..."
-                    sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-
-                    echo "Pushing Docker image to ECR..."
-                    sh "docker push ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: "${AWS_CREDENTIAL}",
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        sh '''
+                            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                            aws configure set region ${AWS_REGION}
+        
+                            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REPO}
+        
+                            echo "Tagging Docker image..."
+                            docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+        
+                            echo "Pushing Docker image to ECR..."
+                            docker push ${AWS_ECR_REPO}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+                        '''
+                    }
                 }
             }
         }
-    }
 
     post {
         success {
